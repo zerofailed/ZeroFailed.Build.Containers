@@ -135,7 +135,7 @@ function _getContainerBuildConfiguration {
 
     Write-Verbose "buildAction: $(ConvertTo-Json $buildAction -Depth 5)"
 
-    # Save the configured action to the configuratin object
+    # Save the configured action to the configuration object
     $config.buildActions.Add($buildAction)
 
     return $config
