@@ -1,4 +1,4 @@
-# <copyright file="build.tasks.ps1" company="Endjin Limited">
+# <copyright file="publish.tasks.ps1" company="Endjin Limited">
 # Copyright (c) Endjin Limited. All rights reserved.
 # </copyright>
 
