@@ -63,7 +63,7 @@ function _getContainerBuildConfiguration {
 
         Write-Verbose "Building image with ACR Tasks: $acrPublishTag"
 
-        # Setup command-line for bulilding via ACR Tasks
+        # Setup command-line for building via ACR Tasks
         $buildAction.command = 'az'
         $buildAction.args.AddRange(
             [string[]]@(
