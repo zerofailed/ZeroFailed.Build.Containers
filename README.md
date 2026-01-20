@@ -5,7 +5,7 @@
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/ZeroFailed.Build.Containers?color=blue)](https://www.powershellgallery.com/packages/ZeroFailed.Build.Containers)
 [![License](https://img.shields.io/github/license/zerofailed/ZeroFailed.Build.Containers.svg)](https://github.com/zerofailed/ZeroFailed.Build.Containers/blob/main/LICENSE)
 
-A [ZeroFailed](https://github.com/zerofailed/ZeroFailed) extension containing features that support build processes for .NET projects.
+A [ZeroFailed](https://github.com/zerofailed/ZeroFailed) extension providing container image build and publish capabilities.
 
 ## Overview
 
@@ -76,7 +76,7 @@ $zerofailedExtensions = @(
 )
 ```
 
-To use the extension to build an existing .NET solution, simply add the `SolutionToBuild` property with the path to your `.sln` file.
+To use the extension to build a container image from an existing `Dockerfile`, simply add the `ContainersToBuild` property to your build configuration file, as shown below.
 
 ```powershell
 # Load the tasks and process
@@ -89,10 +89,14 @@ $ContainersToBuild = @(
         Dockerfile = "src/Dockerfile"
         ImageName = "my-container-image"
         # ContextDir = "<path-to-docker-build-context-dir>"  # Optional
-        # Target = "<build-stage-name>"  # Optional
-        Arguments = @{ myArg = "foo" }  # Optional, supports scriptblocks for deferred evaluation
+        # Target = "<build-stage-name>"                      # Optional
+        Arguments = @{                                       # Optional
+            arg1 = "foo"
+            arg2 = { $someDynamicValue }                     # Supports scriptblocks for deferred evaluation
+        }
     }
 )
+# If publishing images to container registry, provide
 $ContainerRegistryType = "docker"
 $DockerRegistryUsername = "myuser"
 
@@ -104,5 +108,5 @@ task . FullBuild
 
 ## Usage
 
-For an end-to-end example of using this extension to build a .NET project, please take a look at [this sample repo](https://github.com/zerofailed/ZeroFailed.Sample.Build.Containers).
+For an end-to-end example of using this extension to build container images, please take a look at [this sample repo](https://github.com/zerofailed/ZeroFailed.Sample.Containers).
 

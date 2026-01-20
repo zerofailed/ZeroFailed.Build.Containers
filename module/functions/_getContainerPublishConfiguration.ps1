@@ -30,6 +30,7 @@ function _getContainerPublishConfiguration {
                             "$ContainerRegistryFqdn/$ContainerRegistryPublishPrefix/$($config.buildTag)" : `
                             "$ContainerRegistryFqdn/$($config.buildTag)"
         $sourceTag = "$publishTag--pre"
+        $sourceTagToRemove = $sourceTag.Replace("$ContainerRegistryFqdn/", "")
         $targetTag = $publishTag.Replace("$ContainerRegistryFqdn/", "")
         
         # Configure task to create the non '--pre' image tag
@@ -62,12 +63,11 @@ function _getContainerPublishConfiguration {
             [string[]]@(
                 'acr'
                 'repository'
+                'untag'
                 '--name'
                 $ContainerRegistryFqdn
-                '--source'
-                $sourceTag
                 '--image'
-                $sourceTag
+                $sourceTagToRemove
             )
         )
         # Ensure the tasks are configured to use the correct subscription

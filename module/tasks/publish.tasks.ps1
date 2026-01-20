@@ -42,26 +42,26 @@ task PublishContainerImagesToRegistry `
     }
 }
 
-# Synopsis: Create build artifact with container image tag
+# Synopsis: Create build artefact with container image tag
 task OutputContainerImageTagArtefact `
     -If {$ContainersToBuild} `
     -Jobs GenerateContainerBuildTag,{
 
     if (!$script:containerBuildTag) {
-        Write-Warning "No 'image-tag' artifact was created because containerBuildTag is not available"
+        Write-Warning "No 'image-tag' artefact was created because containerBuildTag is not available"
         return
     }
 
-    Write-Build White "Creating build artifact to record the container image tag"
+    Write-Build White "Creating build artefact to record the container image tag"
     
-    # Write tag to artifact file
+    # Write tag to artefact file
     Set-Content -Path $ContainerImageTagArtefactPath -Value $script:containerBuildTag
     
     # Get full path for CI/CD systems
     $artefactFilePath = [IO.Path]::GetFullPath($ContainerImageTagArtefactPath)
     
     Write-Build Green "Container image tag: $script:containerBuildTag"
-    Write-Build Green "Artifact path: $artefactFilePath"
+    Write-Build Green "Artefact path: $artefactFilePath"
 
     # Export to CI/CD platform
     if ($IsAzureDevOps) {
