@@ -125,7 +125,8 @@ function _getContainerBuildConfiguration {
         $buildAction.args.AddRange(
             [string[]]@(
                 '--target'
-                $Item.Target
+                # Support deferred evaluation via scriptblock usign helper from ZeroFailed.DevOps.Common
+                Resolve-Value $Item.Target
             )
         )
     }

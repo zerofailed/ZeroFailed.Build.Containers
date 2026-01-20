@@ -87,7 +87,7 @@ Describe '_getContainerBuildConfiguration' {
             $args | Should -Contain 'ENV_TYPE=production'
         }
 
-        It 'should evaluate scriptblock arguments for deferred evaluation' {
+        It 'should support deferred evaluation for dockerfile arguments' {
             $counter = 0
             $item = @{
                 ImageName  = 'testimage'
@@ -116,6 +116,23 @@ Describe '_getContainerBuildConfiguration' {
             $targetIndex = $args.IndexOf('--target')
             $targetIndex | Should -BeGreaterOrEqual 0
             $args[$targetIndex + 1] | Should -Be 'runtime'
+        }
+
+        It 'should support deferred evaluation for container build target' {
+            $isReleaseMode = $true
+            $item = @{
+                ImageName  = 'testimage'
+                Dockerfile = $testDockerfile
+                Target     = { $isReleaseMode ? 'runtime' : 'debug' }
+            }
+            $isReleaseMode = $false
+
+            $result = _getContainerBuildConfiguration -Item $item -Tag '1.0.0'
+
+            $args = $result.buildActions[0].args
+            $targetIndex = $args.IndexOf('--target')
+            $targetIndex | Should -BeGreaterOrEqual 0
+            $args[$targetIndex + 1] | Should -Be 'debug'
         }
 
         It 'should set command to docker with build argument' {
