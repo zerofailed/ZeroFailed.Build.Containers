@@ -30,7 +30,7 @@ $SkipBuildContainerImages =  [Convert]::ToBoolean((property ZF_BUILD_CONTAINER_S
 # Version configuration
 
 # Synopsis: When set, will override the image version otherwise generated via GitVersion. Undefined by default.
-$ContainerImageVersionOverride = $null
+$ContainerImageVersionOverride = property ZF_BUILD_CONTAINER_IMAGE_VERSION_OVERRIDE ''
 
 
 # Internal state
