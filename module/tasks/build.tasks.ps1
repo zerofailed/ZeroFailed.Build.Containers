@@ -4,6 +4,7 @@
 
 . $PSScriptRoot/build.properties.ps1
 
+# Provides a way of passing arbitrary command-line arguments in a way that is compatible cross-plaform without using 'Invoke-Expression'.
 $sbInvokeCommandWrapper = {
     param (
         [string] $command,
@@ -14,7 +15,7 @@ $sbInvokeCommandWrapper = {
     & $command @additionalArguments
 }
 
-# Synopsis: Generate container build tag from GitVersion or override
+# Synopsis: Generates the container image tag used for all containers, based on a GitVersion version number or an overriden provided by 'ContainerImageVersionOverride'.
 task GenerateContainerBuildTag -If {$ContainersToBuild} Version,{
     
     if ($ContainerImageVersionOverride) {
@@ -30,7 +31,7 @@ task GenerateContainerBuildTag -If {$ContainersToBuild} Version,{
     }
 }
 
-# Synopsis: When building images locally, check whether a Docker daemon is available
+# Synopsis: When building images locally, ensures a Docker daemon is available. If not, throws an error.
 task EnsureLocalDockerDaemon -If { !$UseAcrTasks } {
     Write-Build White "Verifying Docker daemon availability..."
     try {
@@ -42,7 +43,7 @@ task EnsureLocalDockerDaemon -If { !$UseAcrTasks } {
     }
 }
 
-# Synopsis: When building images via ACR Tasks, verify an authenticated Azure CLI connection
+# Synopsis: When building images via ACR Tasks, verifies an authenticated Azure CLI connection. If not, throws an error.
 task EnsureAzCliConnectionForACR -If { $UseAcrTasks } {
     Write-Build White "Building using ACR Tasks - Docker daemon check skipped"
     if (!(Test-AzCliConnection)) {
@@ -50,9 +51,9 @@ task EnsureAzCliConnectionForACR -If { $UseAcrTasks } {
     }
 }
 
-# Synopsis: Build Container Images using Docker or ACR Tasks
+# Synopsis: Builds container images locally (via 'docker build') or remotely using ACR Tasks.
 task BuildContainerImages `
-    -If {!$SkipContainerImages -and $ContainersToBuild} `
+    -If {!$SkipBuildContainerImages -and $ContainersToBuild} `
     -After PackageCore `
     -Jobs GenerateContainerBuildTag,EnsureLocalDockerDaemon,EnsureAzCliConnectionForACR,{
 

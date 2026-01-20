@@ -4,7 +4,7 @@
 
 . $PSScriptRoot/publish.properties.ps1
 
-# Synopsis: Publish Container Images to Docker Registry (Docker Hub)
+# Synopsis: Publish container images to a container registry.
 task PublishContainerImagesToRegistry `
     -If {$ContainerRegistryType -eq "docker" -or $ContainerRegistryType -eq "acr"} `
     -Jobs GenerateContainerBuildTag,EnsureAzCliConnectionForACR,{
@@ -42,7 +42,7 @@ task PublishContainerImagesToRegistry `
     }
 }
 
-# Synopsis: Create build artefact with container image tag
+# Synopsis: Stores the generated container image tag used by the build in a file.
 task OutputContainerImageTagArtefact `
     -If {$ContainersToBuild} `
     -Jobs GenerateContainerBuildTag,{
@@ -77,7 +77,7 @@ task OutputContainerImageTagArtefact `
     }
 }
 
-# Synopsis: Orchestrates container image publishing to configured registry
+# Synopsis: Orchestrates container image publishing.
 task PublishContainerImages `
     -If {!$SkipPublishContainerImages -and $ContainersToBuild} `
     -After PublishCore `
