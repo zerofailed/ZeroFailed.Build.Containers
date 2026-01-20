@@ -1,18 +1,45 @@
 # ZeroFailed.Build.Containers - Reference Sheet
 
-
 <!-- START_GENERATED_HELP -->
 
 ## Build
 
 ### Properties
 
-| Name                            | Default Value | ENV Override                                | Description                                                                                         |
-| ------------------------------- | ------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `ContainerImageVersionOverride` | ''            | `ZF_BUILD_CONTAINER_IMAGE_VERSION_OVERRIDE` | When set, will override the image version otherwise generated via GitVersion. Undefined by default. |
-| `ContainersToBuild`             | @()           |                                             | The configuration for each container image the build will process.                                  |
-| `SkipBuildContainerImages`      | $false        | `ZF_BUILD_CONTAINER_SKIP_BUILD`             | When true, no container images will be built. Default is 'false'.                                   |
-| `UseAcrTasks`                   | $false        | `ZF_BUILD_CONTAINER_USE_ACR_TASKS`          | When true, the container images will be built using ACR Tasks. Default is 'false'.                  |
+| Name                            | Default Value | ENV Override                                | Description                                                                                                                       |
+| ------------------------------- | ------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `ContainerImageVersionOverride` | ''            | `ZF_BUILD_CONTAINER_IMAGE_VERSION_OVERRIDE` | When set, will override the image version otherwise generated via GitVersion. Undefined by default.                               |
+| `ContainersToBuild`             | @()           |                                             | The configuration for each container image the build will process. See [note below](#containerstobuild) for configuration syntax. |
+| `SkipBuildContainerImages`      | $false        | `ZF_BUILD_CONTAINER_SKIP_BUILD`             | When true, no container images will be built. Default is 'false'.                                                                 |
+| `UseAcrTasks`                   | $false        | `ZF_BUILD_CONTAINER_USE_ACR_TASKS`          | When true, the container images will be built using ACR Tasks. Default is 'false'.                                                |
+
+#### ContainersToBuild
+
+This property is configured with the following structure:
+
+```powershell
+$ContainersToBuild = @(
+    @{
+        Dockerfile = "src/frontend/Dockerfile"
+        ImageName = "myapp-frontend"
+        ContextDir = "./dist"                       # Optional. Path relative to build.ps1, otherwise assumes same directory as Dockerfile
+        # Target = "<build-stage-name>"             # Optional multi-stage build target
+        Arguments = @{                              # Optional Dockerfile arguments
+            arg1 = "foo"
+            arg2 = { $someDynamicValue }            # Supports scriptblocks for deferred evaluation
+        }
+    }
+    @{
+        Dockerfile = "src/backend/Dockerfile"
+        ImageName = "myapp-backend"
+        Target = { $Configuration -eq 'Release' ? 'Production' : 'Development' }    # Conditional multi-stage build target
+        Arguments = @{
+            arg1 = "foo"
+            arg2 = { $someDynamicValue }
+        }
+    }
+)
+```
 
 ### Tasks
 

@@ -96,15 +96,17 @@ $ContainersToBuild = @(
         }
     }
 )
-# If publishing images to container registry, provide
-$ContainerRegistryType = "docker"
-$DockerRegistryUsername = "myuser"
+# If publishing images to a container registry, provide its details
+$ContainerRegistryType = "docker"       # Supports 'docker' or 'acr'
+$DockerRegistryUsername = "myuser"      # Required when publishing to a docker registry
 
 ...
 
 # Customise the build process
 task . FullBuild
 ```
+
+The [HELP page](./HELP.md) include details of all available configuration properties.
 
 ## Usage
 
