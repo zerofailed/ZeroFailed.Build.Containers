@@ -28,8 +28,8 @@ function _getContainerBuildConfiguration {
     $containerBuildArgs = [System.Collections.Generic.List[string]]::new()
     if ($Item.Arguments) {
         $Item.Arguments.Keys | ForEach-Object {
-            # Support deferred evaluation via scriptblock
-            $argValue = $Item.Arguments[$_] -is [scriptblock] ? $Item.Arguments[$_].Invoke() : $Item.Arguments[$_]
+            # Support deferred evaluation via scriptblock usign helper from ZeroFailed.DevOps.Common
+            $argValue = Resolve-Value $Item.Arguments[$_]
             
             # Construct command-line arguments for both 'docker build' and 'az acr build'
             $containerBuildArgs.AddRange(
