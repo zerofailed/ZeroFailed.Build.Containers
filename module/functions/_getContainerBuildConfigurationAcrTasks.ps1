@@ -12,6 +12,9 @@ function _getContainerBuildConfigurationAcrTasks {
         [string] $BuildTag,
 
         [Parameter(Mandatory)]
+        [bool] $EnableCaching,
+
+        [Parameter(Mandatory)]
         [hashtable] $BuildAction
     )
 
@@ -62,11 +65,17 @@ function _getContainerBuildConfigurationAcrTasks {
             # Tag with '--pre' suffix for ACR Tasks builds (since the images are published as part of building them),
             # we will then re-tag to the final version as part of the publish phase (i.e. after tests pass etc.)
             "-t {{.Run.Registry}}/$acrPublishTag--pre"
-            "--cache-from=type=registry,ref={{.Run.Registry}}/$($acrRepositoryName):cache"
-            "--cache-to=type=registry,ref={{.Run.Registry}}/$($acrRepositoryName):cache,mode=max"
-            
         )
     )
+
+    if ($EnableCaching) {
+        $taskCmdArgs.AddRange(
+            [string[]]@(
+                "--cache-from=type=registry,ref={{.Run.Registry}}/$($acrRepositoryName):cache"
+                "--cache-to=type=registry,ref={{.Run.Registry}}/$($acrRepositoryName):cache,mode=max"
+            )
+        )
+    }
     
     # Ensure the Dockerfile will be available in the context uploaded to the ACR Tasks
     if (!(Test-Path (Join-Path $Item.ContextDir $buildInfo.Dockerfile))) {

@@ -56,10 +56,17 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
                 Dockerfile = $testDockerfile
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
+
+            $splat = @{
+                BuildAction = $buildAction
+                Item = $item
+                BuildTag = $buildTag
+                EnableCaching = $false
+            }
         }
 
         It 'should set command to az with acr run arguments' {
-            $result = _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationAcrTasks @splat
 
             $result.command | Should -Be 'az'
             $result.args[0] | Should -Be 'acr'
@@ -67,14 +74,14 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
         }
 
         It "should generate an ACT Tasks configuration file" {
-            $result = _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationAcrTasks @splat
 
             $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
             $expectedConfigFilePath | Should -Exist
         }
 
         It 'should include --pre suffix on tag for ACR Tasks' {
-            $result = _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationAcrTasks @splat
 
             $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
             $expectedConfigFilePath | Should -Exist
@@ -84,7 +91,7 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
         It 'should include registry prefix in tag when set' {
             $script:ContainerRegistryPublishPrefix = 'myprefix'
 
-            $result = _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationAcrTasks @splat
 
             $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
             $expectedConfigFilePath | Should -Exist
@@ -97,7 +104,7 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
         It 'should include --subscription flag when AcrSubscription is set' {
             $script:AcrSubscription = 'my-subscription-id'
 
-            $result = _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationAcrTasks @splat
 
             $args = $result.args
             $subIndex = $args.IndexOf('--subscription')
@@ -106,6 +113,43 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
 
             # Reset for other tests
             $script:AcrSubscription = $null
+        }
+
+        It "should not configure caching, when caching is disabled" {
+            $result = _getContainerBuildConfigurationAcrTasks @splat
+
+            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
+            $expectedConfigFilePath | Should -Exist
+            $expectedConfigFilePath | Should -Not -FileContentMatch "--cache-from"
+            $expectedConfigFilePath | Should -Not -FileContentMatch "--cache-to"
+        }
+
+        It "should configure the caching, when caching is enabled" {
+            $cachingSplat = $splat.Clone()
+            $cachingSplat.EnableCaching = $true
+
+            $result = _getContainerBuildConfigurationAcrTasks @cachingSplat
+
+            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
+            $expectedConfigFilePath | Should -Exist
+            $expectedConfigFilePath | Should -FileContentMatch "--cache-from=type=registry,ref=\{\{.Run.Registry\}\}/$($imageName):cache"
+            $expectedConfigFilePath | Should -FileContentMatch "--cache-to=type=registry,ref=\{\{.Run.Registry\}\}/$($imageName):cache,mode=max"
+        }
+
+        It "should configure the caching correctly, when using a registry prefix" {
+            $cachingSplat = $splat.Clone()
+            $cachingSplat.EnableCaching = $true
+            $script:ContainerRegistryPublishPrefix = 'myprefix'
+
+            $result = _getContainerBuildConfigurationAcrTasks @cachingSplat
+
+            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
+            $expectedConfigFilePath | Should -Exist
+            $expectedConfigFilePath | Should -FileContentMatch "--cache-from=type=registry,ref=\{\{.Run.Registry\}\}/myprefix/$($imageName):cache"
+            $expectedConfigFilePath | Should -FileContentMatch "--cache-to=type=registry,ref=\{\{.Run.Registry\}\}/myprefix/$($imageName):cache,mode=max"
+
+            # Reset for other tests
+            $script:ContainerRegistryPublishPrefix = $null
         }
     }
 
@@ -125,7 +169,7 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
         BeforeEach {
             $buildAction = @{
                 command = ''
-                args = [System.Collections.Generic.List[string]]::new()
+                args  [System.Collections.Generic.List[string]]::new()
                 description = 'Building image'
             }
         }
@@ -137,8 +181,8 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            { _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag } |
-                Should -Throw '*ContainerRegistryFqdn is required*'
+            { _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag -EnableCaching $false } |
+            Should -Throw '*ContainerRegistryFqdn is required*'
         }
     }
 }

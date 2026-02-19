@@ -6,12 +6,13 @@
 
 ### Properties
 
-| Name                            | Default Value | ENV Override                                | Description                                                                                                                       |
-| ------------------------------- | ------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `ContainerImageVersionOverride` | ''            | `ZF_BUILD_CONTAINER_IMAGE_VERSION_OVERRIDE` | When set, will override the image version otherwise generated via GitVersion. Undefined by default.                               |
-| `ContainersToBuild`             | @()           |                                             | The configuration for each container image the build will process. See [note below](#containerstobuild) for configuration syntax. |
-| `SkipBuildContainerImages`      | $false        | `ZF_BUILD_CONTAINER_SKIP_BUILD`             | When true, no container images will be built. Default is 'false'.                                                                 |
-| `UseAcrTasks`                   | $false        | `ZF_BUILD_CONTAINER_USE_ACR_TASKS`          | When true, the container images will be built using ACR Tasks. Default is 'false'.                                                |
+| Name                            | Default Value | ENV Override                                      | Description                                                                                                                       |
+| ------------------------------- | ------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `ContainerImageVersionOverride` | ''            | `ZF_BUILD_CONTAINER_IMAGE_VERSION_OVERRIDE`       | When set, will override the image version otherwise generated via GitVersion. Undefined by default.                               |
+| `ContainersToBuild`             | @()           |                                                   | The configuration for each container image the build will process. See [note below](#containerstobuild) for configuration syntax. |
+| `SkipBuildContainerImages`      | $false        | `ZF_BUILD_CONTAINER_SKIP_BUILD`                   | When true, no container images will be built. Default is 'false'.                                                                 |
+| `UseAcrTasks`                   | $false        | `ZF_BUILD_CONTAINER_USE_ACR_TASKS`                | When true, the container images will be built using ACR Tasks. Default is 'false'.                                                |
+| `EnableAcrTasksBuildCache`      | $false        | `ZF_BUILD_CONTAINER_ENABLE_ACR_TASKS_BUILD_CACHE` | When true, build caching will be enabled for  container images built using ACR Tasks. Default is 'false'.                         |
 
 #### ContainersToBuild
 

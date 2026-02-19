@@ -40,7 +40,7 @@ function _getContainerBuildConfiguration {
         BuildTag = $config.buildTag
     }
     if ($UseAcrTasks) {
-        $buildAction = _getContainerBuildConfigurationAcrTasks @getBuildActionsSplat
+        $buildAction = _getContainerBuildConfigurationAcrTasks @getBuildActionsSplat -EnableCaching $EnableAcrTasksBuildCache
     }
     else {
         Write-Verbose "Building image with Docker: $($config.buildTag)"
