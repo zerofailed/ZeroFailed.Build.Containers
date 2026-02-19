@@ -26,7 +26,7 @@ BeforeAll {
     $testCustomDockerfile = Join-Path $testCustomDir 'Dockerfile.prod'
 }
 
-Describe '_getContainerBuildConfigurationDockerDocker' {
+Describe '_getContainerBuildConfigurationDocker' {
 
     Context 'Docker build without ACR Tasks' {
 
