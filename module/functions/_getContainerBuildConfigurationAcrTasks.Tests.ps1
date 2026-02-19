@@ -28,7 +28,7 @@ BeforeAll {
     Mock Write-Host {}
 }
 
-Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
+Describe '_getContainerBuildConfigurationAcrTasks' {
 
     Context 'ACR Tasks build' {
 
