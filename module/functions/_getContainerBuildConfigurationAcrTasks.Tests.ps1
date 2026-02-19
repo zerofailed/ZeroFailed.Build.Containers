@@ -169,7 +169,7 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
         BeforeEach {
             $buildAction = @{
                 command = ''
-                args  [System.Collections.Generic.List[string]]::new()
+                args = [System.Collections.Generic.List[string]]::new()
                 description = 'Building image'
             }
         }
