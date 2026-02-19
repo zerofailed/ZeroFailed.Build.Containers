@@ -73,7 +73,7 @@ Describe '_getContainerBuildConfigurationAcrTasksAcrTasks' {
             $result.args[1] | Should -Be 'run'
         }
 
-        It "should generate an ACT Tasks configuration file" {
+        It "should generate an ACR Tasks configuration file" {
             $result = _getContainerBuildConfigurationAcrTasks @splat
 
             $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
