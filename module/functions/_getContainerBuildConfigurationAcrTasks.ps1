@@ -53,7 +53,13 @@ function _getContainerBuildConfigurationAcrTasks {
     }
 
     # Derive the ACR repository name by removing the tag from the name derived above
-    $acrRepositoryName = $acrPublishTag.Replace(":$Tag", '')
+    $lastColonIndex = $acrPublishTag.LastIndexOf(':')
+    if ($lastColonIndex -ge 0) {
+        $acrRepositoryName = $acrPublishTag.Substring(0, $lastColonIndex)
+    }
+    else {
+        $acrRepositoryName = $acrPublishTag
+    }
 
     # Start constructing the command-line that ACR Tasks will use to build the container image
     $taskCmdArgs = [System.Collections.Generic.List[string]]::new()
