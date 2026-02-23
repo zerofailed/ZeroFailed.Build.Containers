@@ -84,13 +84,16 @@ function _getContainerBuildConfigurationAcrTasks {
     }
     
     
-    # Use IO.Path.Combine() since it handles combining 2 absolute paths, whereas Join-Path does not
-    $dockerFilePath = [IO.Path]::Combine($here, $Item.Dockerfile)
     # Ensure the Dockerfile will be available in the context uploaded to the ACR Tasks
+    # NOTE: Use IO.Path.Combine() since it handles combining 2 absolute paths, whereas Join-Path does not
+    $dockerFilePath = [IO.Path]::Combine($Item.ContextDir, $Item.Dockerfile)
     if (!(Test-Path $dockerFilePath)) {
-        Copy-Item -Path $dockerFilePath -Destination $Item.ContextDir
+        # Copy the Dockerfile into the context path
+        Copy-Item -Path $Item.Dockerfile -Destination $Item.ContextDir -Force
+        # Having copied the file to ContextDir, we need to reference it by its filename only
+        # so we must strip any other path information included in the original config
         $dockerFile = Get-ChildItem $Item.Dockerfile
-        $taskCmdArgs.Add("-f $($dockerFile.BaseName)")
+        $taskCmdArgs.Add("-f $($dockerFile.Name)")
     }
     else {
         $taskCmdArgs.Add("-f $($Item.Dockerfile)")

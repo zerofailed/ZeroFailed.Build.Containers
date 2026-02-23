@@ -152,6 +152,95 @@ Describe '_getContainerBuildConfigurationAcrTasks' {
         }
     }
 
+    Context 'Dockerfile path handling' {
+
+        BeforeAll {
+            $script:UseAcrTasks = $true
+            $script:ContainerRegistryFqdn = 'myacr.azurecr.io'
+            $script:ContainerRegistryPublishPrefix = $null
+            $script:AcrSubscription = $null
+
+            $imageName = 'pathimage'
+            $tag = 'v1.0.0'
+            $buildTag = "{0}:{1}" -f $imageName.ToLower(), $tag
+        }
+
+        BeforeEach {
+            $buildAction = @{
+                command = ''
+                args = [System.Collections.Generic.List[string]]::new()
+                description = 'Building image'
+            }
+            Mock Copy-Item {}
+        }
+
+        It 'should not copy Dockerfile when it is already in ContextDir' {
+            $item = @{
+                ImageName  = $imageName
+                Dockerfile = $testDockerfile
+                ContextDir = (Split-Path -Parent $testDockerfile)
+            }
+
+            _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag -EnableCaching $false
+
+            Should -Invoke Copy-Item -Times 0 -Exactly
+        }
+
+        It 'should use the Dockerfile value directly in the -f flag when Dockerfile is already in ContextDir' {
+            $item = @{
+                ImageName  = $imageName
+                Dockerfile = $testDockerfile
+                ContextDir = (Split-Path -Parent $testDockerfile)
+            }
+
+            _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag -EnableCaching $false
+
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "-f $([regex]::Escape($testDockerfile))" }
+        }
+
+        It 'should copy Dockerfile to ContextDir when it is not already there' {
+            Mock Test-Path { $false } -ParameterFilter { $Path -eq $testAppDockerfile }
+
+            $item = @{
+                ImageName  = $imageName
+                Dockerfile = $testAppDockerfile
+                ContextDir = $testAppSrcDir
+            }
+
+            _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag -EnableCaching $false
+
+            Should -Invoke Copy-Item -Times 1 -Exactly -ParameterFilter { $Path -eq $testAppDockerfile -and $Destination -eq $testAppSrcDir }
+        }
+
+        It 'should use filename only in the -f flag when Dockerfile is copied to ContextDir' {
+            Mock Test-Path { $false } -ParameterFilter { $Path -eq $testAppDockerfile }
+
+            $item = @{
+                ImageName  = $imageName
+                Dockerfile = $testAppDockerfile
+                ContextDir = $testAppSrcDir
+            }
+
+            _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag -EnableCaching $false
+
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "-f Dockerfile\b" }
+        }
+
+        It 'should preserve the file extension in the -f flag when a custom Dockerfile name is copied' {
+            Mock Test-Path { $false } -ParameterFilter { $Path -eq $testCustomDockerfile }
+
+            $item = @{
+                ImageName  = $imageName
+                Dockerfile = $testCustomDockerfile
+                ContextDir = $testAppSrcDir
+            }
+
+            _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag -EnableCaching $false
+
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "-f Dockerfile\.prod" }
+        }
+    }
+
     Context 'Error handling' {
 
         BeforeAll {
