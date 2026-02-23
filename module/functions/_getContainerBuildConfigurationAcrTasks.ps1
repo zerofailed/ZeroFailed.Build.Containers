@@ -40,13 +40,14 @@ function _getContainerBuildConfigurationAcrTasks {
     )
 
     # Generate ACR Tasks build configuration file
-    $taskConfig = @{
+    $taskConfig = [ordered]@{
         version = 'v1.0.0'
         steps = @(
-            @{
+            [ordered]@{
                 cmd = 'buildx create --use'
             }
-            @{
+            [ordered]@{
+                # Setup placeholder we can update below
                 cmd = ''
             }
         )
@@ -111,8 +112,9 @@ function _getContainerBuildConfigurationAcrTasks {
     # Add the cmd args into the task configuration for the main build step
     $taskConfig.steps[1].cmd = $taskCmdArgs -join " "
     
-    # Generate the task configuration file
-    $taskConfigPath = New-TemporaryFile
+    # Generate the task configuration file in a path that will be available in the ACR Tasks context
+    $taskConfigFilename = 'acr-tasks-config.g.yaml'
+    $taskConfigPath = Join-Path $Item.ContextDir $taskConfigFilename
     $taskConfig | ConvertTo-Yaml | Out-File -FilePath $taskConfigPath -Force      
     Write-Host "Generated ACR Tasks config file: $taskConfigPath"
     Write-Verbose "ACR Tasks config:`n$(Get-Content -Raw $taskConfigPath)"
@@ -121,7 +123,7 @@ function _getContainerBuildConfigurationAcrTasks {
     $BuildAction.args.AddRange(
         [string[]]@(
             '-f'
-            $taskConfigPath
+            $taskConfigFilename
             "--registry"
             $ContainerRegistryFqdn
             $Item.ContextDir

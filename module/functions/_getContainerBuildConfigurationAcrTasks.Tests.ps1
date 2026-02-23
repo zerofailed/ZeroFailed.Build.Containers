@@ -30,7 +30,9 @@ BeforeAll {
     New-Item $testCustomDockerfile -ItemType File -Force
 
     Mock Write-Host {}
+    Mock Write-Verbose {}
     Mock Out-File {}
+    Mock Get-Content {}
 }
 
 Describe '_getContainerBuildConfigurationAcrTasks' {
