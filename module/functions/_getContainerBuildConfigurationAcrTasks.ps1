@@ -83,14 +83,17 @@ function _getContainerBuildConfigurationAcrTasks {
         )
     }
     
+    
+    # Use IO.Path.Combine() since it handles combining 2 absolute paths, whereas Join-Path does not
+    $dockerFilePath = [IO.Path]::Combine($here, $Item.Dockerfile)
     # Ensure the Dockerfile will be available in the context uploaded to the ACR Tasks
-    if (!(Test-Path (Join-Path $Item.ContextDir $buildInfo.Dockerfile))) {
-        Copy-Item (Join-Path $here $buildInfo.Dockerfile) $Item.ContextDir
-        $dockerFile = Get-ChildItem $buildInfo.Dockerfile
+    if (!(Test-Path $dockerFilePath)) {
+        Copy-Item -Path $dockerFilePath -Destination $Item.ContextDir
+        $dockerFile = Get-ChildItem $Item.Dockerfile
         $taskCmdArgs.Add("-f $($dockerFile.BaseName)")
     }
     else {
-        $taskCmdArgs.Add("-f $($buildInfo.Dockerfile)")
+        $taskCmdArgs.Add("-f $($Item.Dockerfile)")
     }
     
     # Add any dynamic build arguments
@@ -106,17 +109,16 @@ function _getContainerBuildConfigurationAcrTasks {
     $taskConfig.steps[1].cmd = $taskCmdArgs -join " "
     
     # Generate the task configuration file
-    $taskConfigFilename = 'acr-tasks-config.g.yaml'
-    $taskConfigPath = Join-Path $Item.ContextDir $taskConfigFilename
-    $taskConfig | ConvertTo-Yaml | Out-File -Path $taskConfigPath -Force      
-    Write-Host "Generated ACR Tasks config file: $taskConfigFilename"
+    $taskConfigPath = New-TemporaryFile
+    $taskConfig | ConvertTo-Yaml | Out-File -FilePath $taskConfigPath -Force      
+    Write-Host "Generated ACR Tasks config file: $taskConfigPath"
     Write-Verbose "ACR Tasks config:`n$(Get-Content -Raw $taskConfigPath)"
 
     # Add other az-cli command-lin arguments
     $BuildAction.args.AddRange(
         [string[]]@(
             '-f'
-            $taskConfigFilename
+            $taskConfigPath
             "--registry"
             $ContainerRegistryFqdn
             $Item.ContextDir

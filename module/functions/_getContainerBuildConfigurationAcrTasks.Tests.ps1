@@ -14,18 +14,23 @@ BeforeAll {
     Mock Write-Verbose {}
 
     # Define cross-platform test paths using TestDrive
-    $testPathDir = Join-Path 'TestDrive:' 'path' 'to'
+    # NOTE: Use $TestDrive instead of TestDrive: for compat with .NET APIs
+    $testPathDir = Join-Path $TestDrive 'path' 'to'
     $testDockerfile = Join-Path $testPathDir 'Dockerfile'
+    New-Item $testDockerfile -ItemType File -Force
 
-    $testAppDockerDir = Join-Path 'TestDrive:' 'app' 'docker'
+    $testAppDockerDir = Join-Path $TestDrive 'app' 'docker'
     $testAppDockerfile = Join-Path $testAppDockerDir 'Dockerfile'
+    New-Item $testAppDockerfile -ItemType File -Force
 
-    $testAppSrcDir = Join-Path 'TestDrive:' 'app' 'src'
+    $testAppSrcDir = Join-Path $TestDrive 'app' 'src'
 
-    $testCustomDir = Join-Path 'TestDrive:' 'custom' 'path'
+    $testCustomDir = Join-Path $TestDrive 'custom' 'path'
     $testCustomDockerfile = Join-Path $testCustomDir 'Dockerfile.prod'
+    New-Item $testCustomDockerfile -ItemType File -Force
 
     Mock Write-Host {}
+    Mock Out-File {}
 }
 
 Describe '_getContainerBuildConfigurationAcrTasks' {
@@ -76,16 +81,14 @@ Describe '_getContainerBuildConfigurationAcrTasks' {
         It "should generate an ACR Tasks configuration file" {
             $result = _getContainerBuildConfigurationAcrTasks @splat
 
-            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
-            $expectedConfigFilePath | Should -Exist
+            Should -Invoke Out-File -ParameterFilter { $FilePath -ne $null }
         }
 
         It 'should include --pre suffix on tag for ACR Tasks' {
             $result = _getContainerBuildConfigurationAcrTasks @splat
 
-            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
-            $expectedConfigFilePath | Should -Exist
-            $expectedConfigFilePath | Should -FileContentMatch "-t \{\{\.Run.Registry\}\}/$($imageName):$tag--pre"
+            Should -Invoke Out-File -ParameterFilter { $FilePath -ne $null }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "-t \{\{\.Run.Registry\}\}/$($imageName):$tag--pre" }
         }
 
         It 'should include registry prefix in tag when set' {
@@ -93,9 +96,8 @@ Describe '_getContainerBuildConfigurationAcrTasks' {
 
             $result = _getContainerBuildConfigurationAcrTasks @splat
 
-            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
-            $expectedConfigFilePath | Should -Exist
-            $expectedConfigFilePath | Should -FileContentMatch "-t \{\{\.Run.Registry\}\}/myprefix/$($imageName):$tag--pre"
+            Should -Invoke Out-File -ParameterFilter { $FilePath -ne $null }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "-t \{\{\.Run.Registry\}\}/myprefix/$($imageName):$tag--pre" }
 
             # Reset for other tests
             $script:ContainerRegistryPublishPrefix = $null
@@ -118,10 +120,9 @@ Describe '_getContainerBuildConfigurationAcrTasks' {
         It "should not configure caching, when caching is disabled" {
             $result = _getContainerBuildConfigurationAcrTasks @splat
 
-            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
-            $expectedConfigFilePath | Should -Exist
-            $expectedConfigFilePath | Should -Not -FileContentMatch "--cache-from"
-            $expectedConfigFilePath | Should -Not -FileContentMatch "--cache-to"
+            Should -Invoke Out-File -ParameterFilter { $FilePath -ne $null }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -NotMatch "--cache-from" }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -NotMatch "--cache-to" }
         }
 
         It "should configure the caching, when caching is enabled" {
@@ -130,10 +131,9 @@ Describe '_getContainerBuildConfigurationAcrTasks' {
 
             $result = _getContainerBuildConfigurationAcrTasks @cachingSplat
 
-            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
-            $expectedConfigFilePath | Should -Exist
-            $expectedConfigFilePath | Should -FileContentMatch "--cache-from=type=registry,ref=\{\{.Run.Registry\}\}/$($imageName):cache"
-            $expectedConfigFilePath | Should -FileContentMatch "--cache-to=type=registry,ref=\{\{.Run.Registry\}\}/$($imageName):cache,mode=max"
+            Should -Invoke Out-File -ParameterFilter { $FilePath -ne $null }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "--cache-from=type=registry,ref=\{\{.Run.Registry\}\}/$($imageName):cache" }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "--cache-to=type=registry,ref=\{\{.Run.Registry\}\}/$($imageName):cache,mode=max" }
         }
 
         It "should configure the caching correctly, when using a registry prefix" {
@@ -143,10 +143,9 @@ Describe '_getContainerBuildConfigurationAcrTasks' {
 
             $result = _getContainerBuildConfigurationAcrTasks @cachingSplat
 
-            $expectedConfigFilePath = Join-Path $item.ContextDir 'acr-tasks-config.g.yaml'
-            $expectedConfigFilePath | Should -Exist
-            $expectedConfigFilePath | Should -FileContentMatch "--cache-from=type=registry,ref=\{\{.Run.Registry\}\}/myprefix/$($imageName):cache"
-            $expectedConfigFilePath | Should -FileContentMatch "--cache-to=type=registry,ref=\{\{.Run.Registry\}\}/myprefix/$($imageName):cache,mode=max"
+            Should -Invoke Out-File -ParameterFilter { $FilePath -ne $null }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "--cache-from=type=registry,ref=\{\{.Run.Registry\}\}/myprefix/$($imageName):cache" }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "--cache-to=type=registry,ref=\{\{.Run.Registry\}\}/myprefix/$($imageName):cache,mode=max" }
 
             # Reset for other tests
             $script:ContainerRegistryPublishPrefix = $null

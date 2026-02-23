@@ -18,14 +18,17 @@ BeforeAll {
     # Define cross-platform test paths using TestDrive
     $testPathDir = Join-Path 'TestDrive:' 'path' 'to'
     $testDockerfile = Join-Path $testPathDir 'Dockerfile'
+    New-Item $testDockerfile -ItemType File -Force
 
     $testAppDockerDir = Join-Path 'TestDrive:' 'app' 'docker'
     $testAppDockerfile = Join-Path $testAppDockerDir 'Dockerfile'
+    New-Item $testAppDockerfile -ItemType File -Force
 
     $testAppSrcDir = Join-Path 'TestDrive:' 'app' 'src'
 
     $testCustomDir = Join-Path 'TestDrive:' 'custom' 'path'
     $testCustomDockerfile = Join-Path $testCustomDir 'Dockerfile.prod'
+    New-Item $testCustomDockerfile -ItemType File -Force
 }
 
 Describe '_getContainerBuildConfiguration' {

@@ -18,7 +18,15 @@ function _getContainerBuildConfiguration {
         buildActions = [System.Collections.Generic.List[Object]]::new()
     }
 
-    # Determine context directory (defaults to Dockerfile directory)
+    # Ensure Determine Dockerfile (applying defaults as necessary)
+    if (!$Item.ContainsKey("Dockerfile")) {
+        throw "Missing required 'Dockerfile' configuration property"
+    }
+    elseif (!(Test-Path $Item.Dockerfile)) {
+        throw "Dockerfile could not be found: $($Item.Dockerfile)"
+    }
+    
+    # Determine context directory (defaults to same directory as the Dockerfile)
     if (!$Item.ContainsKey("ContextDir")) {
         $Item.Add("ContextDir", (Split-Path -Parent $Item.Dockerfile))
     }
