@@ -14,8 +14,8 @@ task PublishContainerImagesToRegistry `
         throw "Container build tag is not available. Ensure 'GenerateContainerBuildTag' task has run successfully."
     }
 
-    # Validate required settings
-    if (!$ContainerRegistryPublishPrefix -and !$DockerRegistryUsername) {
+    # Validate required settings when publishing to a Docker registry, we need a value that can be treated as a username
+    if ($ContainerRegistryType -eq "docker" -and !$ContainerRegistryPublishPrefix -and !$DockerRegistryUsername) {
         throw "Either 'ContainerRegistryPublishPrefix' or 'DockerRegistryUsername' must be defined when publishing to a Docker Registry"
     }
 

@@ -23,6 +23,9 @@ $ContainersToBuild = @()
 # Synopsis: When true, the container images will be built using ACR Tasks. Default is 'false'.
 $UseAcrTasks = [Convert]::ToBoolean((property ZF_BUILD_CONTAINER_USE_ACR_TASKS $false))
 
+# Synopsis: When true, build caching will be enabled for  container images built using ACR Tasks. Default is 'false'.
+$EnableAcrTasksBuildCache = [Convert]::ToBoolean((property ZF_BUILD_CONTAINER_ENABLE_ACR_TASKS_BUILD_CACHE $false))
+
 # Synopsis: When true, no container images will be built. Default is 'false'.
 $SkipBuildContainerImages =  [Convert]::ToBoolean((property ZF_BUILD_CONTAINER_SKIP_BUILD $false))
 
