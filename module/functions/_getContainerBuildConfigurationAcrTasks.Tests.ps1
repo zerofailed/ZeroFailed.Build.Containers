@@ -188,7 +188,7 @@ Describe '_getContainerBuildConfigurationAcrTasks' {
             Should -Invoke Copy-Item -Times 0 -Exactly
         }
 
-        It 'should use the Dockerfile value directly in the -f flag when Dockerfile is already in ContextDir' {
+        It 'should use a relative path in the -f flag when Dockerfile is already in ContextDir' {
             $item = @{
                 ImageName  = $imageName
                 Dockerfile = $testDockerfile
@@ -197,7 +197,7 @@ Describe '_getContainerBuildConfigurationAcrTasks' {
 
             _getContainerBuildConfigurationAcrTasks -BuildAction $buildAction -Item $item -BuildTag $buildTag -EnableCaching $false
 
-            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "-f $([regex]::Escape($testDockerfile))" }
+            Should -Invoke Out-File -ParameterFilter { $InputObject -Match "-f Dockerfile\b" }
         }
 
         It 'should copy Dockerfile to ContextDir when it is not already there' {
