@@ -86,18 +86,19 @@ function _getContainerBuildConfigurationAcrTasks {
     
     
     # Ensure the Dockerfile will be available in the context uploaded to the ACR Tasks
-    # NOTE: Use IO.Path.Combine() since it handles combining 2 absolute paths, whereas Join-Path does not
-    $dockerFilePath = [IO.Path]::Combine($Item.ContextDir, $Item.Dockerfile)
-    if (!(Test-Path $dockerFilePath)) {
-        # Copy the Dockerfile into the context path
-        Copy-Item -Path $Item.Dockerfile -Destination $Item.ContextDir -Force
-        # Having copied the file to ContextDir, we need to reference it by its filename only
-        # so we must strip any other path information included in the original config
-        $dockerFile = Get-ChildItem $Item.Dockerfile
-        $taskCmdArgs.Add("-f $($dockerFile.Name)")
+    $resolvedContextDir = [IO.Path]::GetFullPath($Item.ContextDir)
+    $resolvedDockerfile  = [IO.Path]::GetFullPath($Item.Dockerfile)
+    $contextDirPrefix   = $resolvedContextDir + [IO.Path]::DirectorySeparatorChar
+    if ($resolvedDockerfile.StartsWith($contextDirPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        # Dockerfile is inside ContextDir — emit as relative path for ACR Tasks remote context
+        $relativeDockerfile = $resolvedDockerfile.Substring($contextDirPrefix.Length)
+        $taskCmdArgs.Add("-f $relativeDockerfile")
     }
     else {
-        $taskCmdArgs.Add("-f $($Item.Dockerfile)")
+        # Dockerfile is outside ContextDir — copy it in, reference by filename only
+        Copy-Item -Path $Item.Dockerfile -Destination $Item.ContextDir -Force
+        $dockerFile = Get-ChildItem $Item.Dockerfile
+        $taskCmdArgs.Add("-f $($dockerFile.Name)")
     }
     
     # Add any dynamic build arguments
