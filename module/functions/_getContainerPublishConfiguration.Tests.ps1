@@ -358,4 +358,26 @@ Describe '_getContainerPublishConfiguration' {
             $result.publishActions[0].Keys | Should -Contain 'description'
         }
     }
+
+    Context 'Customised DockerToolPath' {
+
+        BeforeAll {
+            $script:UseAcrTasks = $false
+            $script:ContainerRegistryType = 'docker'
+            $script:ContainerRegistryPublishPrefix = $null
+            $script:ContainerRegistryFqdn = 'docker.io'
+            $script:DockerRegistryUsername = 'myuser'
+            $script:DockerRegistryPassword = 'testpassword'
+        }
+
+        It 'should set command to wslc with build argument' {
+            $item = @{
+                ImageName = 'testimage'
+            }
+
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'wslc'
+
+            $result.publishActions[0].command | Should -Be 'wslc'
+        }
+    }
 }

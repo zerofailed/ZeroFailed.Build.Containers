@@ -157,4 +157,40 @@ Describe '_getContainerBuildConfigurationDocker' {
             $result.args[$fileIndex + 1] | Should -Be $testCustomDockerfile
         }
     }
+
+    Context 'Customised DockerToolPath' {
+
+        BeforeAll {
+            # Configure for Docker builds
+            $script:UseAcrTasks = $false
+            $script:ContainerRegistryFqdn = $null
+            $script:ContainerRegistryPublishPrefix = $null
+            $script:AcrSubscription = $null
+
+            $imageName = 'testimage'
+            $tag = 'v1.0.0'
+            $buildTag = "{0}:{1}" -f $imageName.ToLower(), $tag
+        }
+
+        BeforeEach {
+            $buildAction = @{
+                command = ''
+                args = [System.Collections.Generic.List[string]]::new()
+                description = 'Building image'
+            }
+        }
+
+        It 'should set command to wslc with build argument' {
+            $item = @{
+                ImageName  = $imageName
+                Dockerfile = $testDockerfile
+                ContextDir = (Split-Path -Parent $testDockerfile)
+            }
+
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'wslc'
+
+            $result.command | Should -Be 'wslc'
+            $result.args[0] | Should -Be 'build'
+        }
+    }
 }
