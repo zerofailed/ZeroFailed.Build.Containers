@@ -61,7 +61,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $result.args | Should -Contain '--build-arg'
             $result.args | Should -Contain 'BUILD_VERSION=1.0.0'
@@ -79,7 +79,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $result.args | Should -Contain 'DYNAMIC_VALUE=value-1'
         }
@@ -92,7 +92,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $targetIndex = $result.args.IndexOf('--target')
             $targetIndex | Should -BeGreaterOrEqual 0
@@ -109,7 +109,7 @@ Describe '_getContainerBuildConfigurationDocker' {
             }
             $isReleaseMode = $false
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $targetIndex = $result.args.IndexOf('--target')
             $targetIndex | Should -BeGreaterOrEqual 0
@@ -123,7 +123,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $result.command | Should -Be 'docker'
             $result.args[0] | Should -Be 'build'
@@ -136,7 +136,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $tagIndex = $result.args.IndexOf('-t')
             $tagIndex | Should -BeGreaterOrEqual 0
@@ -150,7 +150,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testCustomDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $fileIndex = $result.args.IndexOf('--file')
             $fileIndex | Should -BeGreaterOrEqual 0

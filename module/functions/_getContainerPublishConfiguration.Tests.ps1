@@ -29,7 +29,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'MyImage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag 'v1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag 'v1.0.0' -DockerToolPath 'docker'
 
             $result.buildTag | Should -Be 'myimage:v1.0.0'
         }
@@ -39,7 +39,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result.publishTag | Should -Be 'docker.io/myorg/testimage:1.0.0'
         }
@@ -49,7 +49,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $loginAction = $result.publishActions | Where-Object { $_.description -eq 'Logging-in to Docker registry' }
             $loginAction | Should -Not -BeNullOrEmpty
@@ -78,7 +78,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result.publishTag | Should -Be 'docker.io/myuser/testimage:1.0.0'
         }
@@ -100,7 +100,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             Should -Invoke Write-Warning -Times 1 -ParameterFilter {
                 $Message -like '*Docker registry password*'
@@ -112,7 +112,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $loginAction = $result.publishActions | Where-Object { $_.description -eq 'Logging-in to Docker registry' }
             $loginAction | Should -BeNullOrEmpty
@@ -135,7 +135,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result.publishTag | Should -Be 'myacr.azurecr.io/myprefix/testimage:1.0.0'
         }
@@ -157,7 +157,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result.publishTag | Should -Be 'myacr.azurecr.io/testimage:1.0.0'
         }
@@ -179,7 +179,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             # buildTag is 'testimage:1.0.0', publishTag is 'myacr.azurecr.io/testimage:1.0.0'
             # They differ, so re-tag action should be added
@@ -208,7 +208,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $pushAction = $result.publishActions | Where-Object { $_.description -eq 'Pushing image' }
             $pushAction | Should -Not -BeNullOrEmpty
@@ -222,7 +222,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $lastAction = $result.publishActions[-1]
             $lastAction.description | Should -Be 'Pushing image'
@@ -246,7 +246,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $importAction = $result.publishActions | Where-Object { $_.description -like "*Promoting 'pre' tag*" }
             $importAction | Should -Not -BeNullOrEmpty
@@ -263,7 +263,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $importAction = $result.publishActions | Where-Object { $_.description -like "*Promoting 'pre' tag*" }
             $importAction.args | Should -Contain 'myacr.azurecr.io/myprefix/testimage:1.0.0--pre'
@@ -288,7 +288,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $importAction = $result.publishActions | Where-Object { $_.description -like "*Promoting 'pre' tag*" }
             $importAction.args | Should -Contain 'myacr.azurecr.io/testimage:1.0.0--pre'
@@ -313,7 +313,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $importAction = $result.publishActions | Where-Object { $_.description -like "*Promoting 'pre' tag*" }
             $importAction.args | Should -Contain '--subscription'
@@ -337,7 +337,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result | Should -BeOfType [hashtable]
             $result.Keys | Should -Contain 'buildTag'
@@ -350,7 +350,7 @@ Describe '_getContainerPublishConfiguration' {
                 ImageName = 'testimage'
             }
 
-            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerPublishConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result.publishActions.Count | Should -BeGreaterOrEqual 1
             $result.publishActions[0].Keys | Should -Contain 'command'
