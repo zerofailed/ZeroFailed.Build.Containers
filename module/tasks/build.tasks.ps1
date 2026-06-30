@@ -35,7 +35,7 @@ task GenerateContainerBuildTag -If {$ContainersToBuild} Version,{
 task EnsureLocalDockerDaemon -If { !$UseAcrTasks } {
     Write-Build White "Verifying Docker daemon availability..."
     try {
-        exec { docker ps } | Out-Null
+        exec { & $DockerToolPath ps } | Out-Null
         Write-Build Green "Docker daemon is available"
     }
     catch {
@@ -65,7 +65,7 @@ task BuildContainerImages `
     # Build each container image
     foreach ($buildInfo in $ContainersToBuild) {
         
-        $config = _getContainerBuildConfiguration -Item $buildInfo -Tag $script:containerBuildTag
+        $config = _getContainerBuildConfiguration -Item $buildInfo -Tag $script:containerBuildTag -DockerToolPath $DockerToolPath
         Write-Build Green "Building container: $($config.buildTag)"
         Write-Verbose "buildConfig: $(ConvertTo-Json $config -Depth 10)"
 

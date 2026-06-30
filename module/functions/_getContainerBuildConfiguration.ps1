@@ -9,7 +9,10 @@ function _getContainerBuildConfiguration {
         [hashtable] $Item,
 
         [Parameter(Mandatory)]
-        [string] $Tag
+        [string] $Tag,
+
+        [Parameter(Mandatory)]
+        [string] $DockerToolPath
     )
 
     # Create empty configuration object that will be returned
@@ -46,6 +49,7 @@ function _getContainerBuildConfiguration {
         BuildAction = $buildAction
         Item = $Item
         BuildTag = $config.buildTag
+        DockerToolPath = $DockerToolPath
     }
     if ($UseAcrTasks) {
         $buildAction = _getContainerBuildConfigurationAcrTasks @getBuildActionsSplat -EnableCaching $EnableAcrTasksBuildCache

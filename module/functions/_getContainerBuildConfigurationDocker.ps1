@@ -12,11 +12,14 @@ function _getContainerBuildConfigurationDocker {
         [string] $BuildTag,
 
         [Parameter(Mandatory)]
-        [hashtable] $BuildAction
+        [hashtable] $BuildAction,
+
+        [Parameter(Mandatory)]
+        [string] $DockerToolPath
     )
 
     # Add Docker-specific parameters
-    $BuildAction.command = 'docker'
+    $BuildAction.command = $DockerToolPath
     $BuildAction.args.AddRange(
         [string[]]@(
             'build'

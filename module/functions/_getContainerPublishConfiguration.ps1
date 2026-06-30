@@ -10,7 +10,10 @@ function _getContainerPublishConfiguration {
         [hashtable] $Item,
 
         [Parameter(Mandatory)]
-        [string] $Tag
+        [string] $Tag,
+
+        [Parameter(Mandatory)]
+        [string] $DockerToolPath
     )
 
     # Create empty configuration object that will be returned
@@ -100,7 +103,7 @@ function _getContainerPublishConfiguration {
                 # Handle Docker registry authentication
                 if ($DockerRegistryPassword) {
                     $dockerLoginTask = @{
-                        command = 'docker'
+                        command = $DockerToolPath
                         args = [System.Collections.Generic.List[string]]::new()
                         description = 'Logging-in to Docker registry'
                     }
@@ -130,7 +133,7 @@ function _getContainerPublishConfiguration {
         if ($config.buildTag -ne $config.publishTag) {
             # Setup the command to re-tag the image prior to publishing
             $reTagTask = @{
-                command = 'docker'
+                command = $DockerToolPath
                 args = [System.Collections.Generic.List[string]]::new()
                 description = 'Re-tagging image'
             }
@@ -146,7 +149,7 @@ function _getContainerPublishConfiguration {
     
         # Setup the publish command
         $pushTask = @{
-            command = 'docker'
+            command = $DockerToolPath
             args = [System.Collections.Generic.List[string]]::new()
             description = 'Pushing image'
         }
