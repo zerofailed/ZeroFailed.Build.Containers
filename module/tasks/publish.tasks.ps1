@@ -23,7 +23,7 @@ task PublishContainerImagesToRegistry `
 
     foreach ($buildInfo in $ContainersToBuild) {
         
-        $config = _getContainerPublishConfiguration -Item $buildInfo -Tag $script:containerBuildTag
+        $config = _getContainerPublishConfiguration -Item $buildInfo -Tag $script:containerBuildTag -DockerToolPath $DockerToolPath
         Write-Build Green "Publishing container: $($config.buildTag) -> $($config.publishTag)"
         
         # Execute the commands included in the returned config
