@@ -49,6 +49,7 @@ $ContainersToBuild = @(
 | `BuildContainerImages`        | Builds container images locally (via 'docker build') or remotely using ACR Tasks.                                                                            |
 | `EnsureAzCliConnectionForACR` | When building images via ACR Tasks, verifies an authenticated Azure CLI connection. If not, throws an error.                                                 |
 | `EnsureLocalDockerDaemon`     | When building images locally, ensures a Docker daemon is available. If not, throws an error.                                                                 |
+| `EnsurePowerShellYamlModule`  | When building images via ACR Tasks, ensures the 'powershell-yaml' module (used to generate the ACR Tasks config file) is installed by the 'setupModules' task provided by the ZeroFailed.DevOps.Common extension. |
 | `GenerateContainerBuildTag`   | Generates the container image tag used for all containers, based on a GitVersion version number or an overriden provided by 'ContainerImageVersionOverride'. |
 
 ## Publish
