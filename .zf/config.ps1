@@ -31,6 +31,14 @@ $PSMarkdownDocsOutputPath = './docs/functions'
 $PSMarkdownDocsIncludeModulePage = $false
 $CreateGitHubRelease = $false   # only run for CI build by default
 
+# Unit tests for the ACR Tasks build configuration require this module
+$RequiredPowerShellModules = @{
+    'powershell-yaml' = @{
+        version = '[0.4.7,1.0)'
+        repository = 'PSGallery'
+    }
+}
+
 # Customise the build process
 task . FullBuild
 

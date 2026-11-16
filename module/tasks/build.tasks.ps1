@@ -51,6 +51,18 @@ task EnsureAzCliConnectionForACR -If { $UseAcrTasks } {
     }
 }
 
+# Synopsis: When building images via ACR Tasks, ensures the 'powershell-yaml' module (used to generate the ACR Tasks config file) is installed by the 'setupModules' task provided by the ZeroFailed.DevOps.Common extension.
+task EnsurePowerShellYamlModule -If { $UseAcrTasks -and !$SkipBuildContainerImages -and $ContainersToBuild } -Before setupModules {
+    if (!$RequiredPowerShellModules.ContainsKey('powershell-yaml')) {
+        $script:RequiredPowerShellModules += @{
+            'powershell-yaml' = @{
+                version = '[0.4.7,1.0)'
+                repository = 'PSGallery'
+            }
+        }
+    }
+}
+
 # Synopsis: Builds container images locally (via 'docker build') or remotely using ACR Tasks.
 task BuildContainerImages `
     -If {!$SkipBuildContainerImages -and $ContainersToBuild} `
