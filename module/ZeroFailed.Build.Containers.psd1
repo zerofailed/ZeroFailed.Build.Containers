@@ -123,6 +123,7 @@ PrivateData = @{
                 # Assume latest stable version
                 Name = "ZeroFailed.Build.Common"
                 GitRepository = "https://github.com/zerofailed/ZeroFailed.Build.Common"
+                MinimumVersion = "1.0"
                 Process = "tasks/build.process.ps1"
             }
         )

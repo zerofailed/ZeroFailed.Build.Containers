@@ -44,6 +44,8 @@ Functionality within this extension may require the following components to be i
 - [Docker CLI]()
 - [Azure CLI]()
 
+When building images via ACR Tasks (`UseAcrTasks`), the [powershell-yaml](https://www.powershellgallery.com/packages/powershell-yaml) PowerShell module is also required. The `EnsurePowerShellYamlModule` task adds it to `RequiredPowerShellModules`, so the `setupModules` task from the [ZeroFailed.DevOps.Common](https://github.com/zerofailed/ZeroFailed.DevOps.Common) extension installs it automatically.
+
 ## Dependencies
 
 The following ZeroFailed extensions will be installed when using this extension.
