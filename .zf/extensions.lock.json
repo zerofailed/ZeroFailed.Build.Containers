@@ -5,10 +5,12 @@
       "source": {
         "type": "git",
         "folderPath": "module",
+        "preRelease": false,
         "repository": "https://github.com/zerofailed/ZeroFailed.Build.Common"
       },
-      "requested": "main",
+      "requested": "[1.0.0,2.0.0)",
       "resolved": "44282e5a9aadb577d1c17a7b5f3533eea25cc9c1",
+      "resolvedRef": "refs/tags/1.2.4",
       "contentHash": "sha256:2877d270e916982677e13a4c52424f42b21a1d0e5519cf1fce44a09a12582f6a",
       "direct": false,
       "requiredBy": [
@@ -35,8 +37,8 @@
         "repository": "https://github.com/zerofailed/ZeroFailed.Build.PowerShell.git"
       },
       "requested": "main",
-      "resolved": "e81bc6dd6caf7e1e7ef7a19bdab836faaf90c6f3",
-      "contentHash": "sha256:20718d4131ce155fc829af325aa01542eff88ca124bc970e29cebc19ab466a63",
+      "resolved": "4c6fec9410199a097107e605757b08e51ee24296",
+      "contentHash": "sha256:8a14305a5c934c2443b9567a0119942e40d080fc8850d9e9e7b67e3a7a15f6b1",
       "direct": true,
       "requiredBy": []
     },
