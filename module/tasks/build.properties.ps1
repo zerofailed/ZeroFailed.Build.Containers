@@ -20,6 +20,9 @@ $ContainersToBuild = @()
 
 # Build method configuration
 
+# Synopsis: Path to the container runtime CLI tool (e.g. docker, podman, wslc etc.)
+$DockerToolPath = 'docker'
+
 # Synopsis: When true, the container images will be built using ACR Tasks. Default is 'false'.
 $UseAcrTasks = [Convert]::ToBoolean((property ZF_BUILD_CONTAINER_USE_ACR_TASKS $false))
 

@@ -61,7 +61,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $result.args | Should -Contain '--build-arg'
             $result.args | Should -Contain 'BUILD_VERSION=1.0.0'
@@ -79,7 +79,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $result.args | Should -Contain 'DYNAMIC_VALUE=value-1'
         }
@@ -92,7 +92,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $targetIndex = $result.args.IndexOf('--target')
             $targetIndex | Should -BeGreaterOrEqual 0
@@ -109,7 +109,7 @@ Describe '_getContainerBuildConfigurationDocker' {
             }
             $isReleaseMode = $false
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $targetIndex = $result.args.IndexOf('--target')
             $targetIndex | Should -BeGreaterOrEqual 0
@@ -123,7 +123,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $result.command | Should -Be 'docker'
             $result.args[0] | Should -Be 'build'
@@ -136,7 +136,7 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $tagIndex = $result.args.IndexOf('-t')
             $tagIndex | Should -BeGreaterOrEqual 0
@@ -150,11 +150,47 @@ Describe '_getContainerBuildConfigurationDocker' {
                 ContextDir = (Split-Path -Parent $testCustomDockerfile)
             }
 
-            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'docker'
 
             $fileIndex = $result.args.IndexOf('--file')
             $fileIndex | Should -BeGreaterOrEqual 0
             $result.args[$fileIndex + 1] | Should -Be $testCustomDockerfile
+        }
+    }
+
+    Context 'Customised DockerToolPath' {
+
+        BeforeAll {
+            # Configure for Docker builds
+            $script:UseAcrTasks = $false
+            $script:ContainerRegistryFqdn = $null
+            $script:ContainerRegistryPublishPrefix = $null
+            $script:AcrSubscription = $null
+
+            $imageName = 'testimage'
+            $tag = 'v1.0.0'
+            $buildTag = "{0}:{1}" -f $imageName.ToLower(), $tag
+        }
+
+        BeforeEach {
+            $buildAction = @{
+                command = ''
+                args = [System.Collections.Generic.List[string]]::new()
+                description = 'Building image'
+            }
+        }
+
+        It 'should set command to wslc with build argument' {
+            $item = @{
+                ImageName  = $imageName
+                Dockerfile = $testDockerfile
+                ContextDir = (Split-Path -Parent $testDockerfile)
+            }
+
+            $result = _getContainerBuildConfigurationDocker -BuildAction $buildAction -Item $item -BuildTag $buildTag -DockerToolPath 'wslc'
+
+            $result.command | Should -Be 'wslc'
+            $result.args[0] | Should -Be 'build'
         }
     }
 }

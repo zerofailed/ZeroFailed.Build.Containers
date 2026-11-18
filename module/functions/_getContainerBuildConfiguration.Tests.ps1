@@ -48,7 +48,7 @@ Describe '_getContainerBuildConfiguration' {
                 Dockerfile = $testDockerfile
             }
 
-            $result = _getContainerBuildConfiguration -Item $item -Tag 'v1.0.0'
+            $result = _getContainerBuildConfiguration -Item $item -Tag 'v1.0.0' -DockerToolPath 'docker'
 
             $result.buildTag | Should -Be 'myimage:v1.0.0'
         }
@@ -59,7 +59,7 @@ Describe '_getContainerBuildConfiguration' {
                 Dockerfile = $testDockerfile
             }
 
-            $result = _getContainerBuildConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerBuildConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result | Should -BeOfType [hashtable]
             $result.Keys | Should -Contain 'buildTag'
@@ -72,7 +72,7 @@ Describe '_getContainerBuildConfiguration' {
                 Dockerfile = $testDockerfile
             }
 
-            $result = _getContainerBuildConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerBuildConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result.buildActions | Should -HaveCount 1
             $result.buildActions[0].Keys | Should -Contain 'command'
@@ -86,7 +86,7 @@ Describe '_getContainerBuildConfiguration' {
                 Dockerfile = $testAppDockerfile
             }
             
-            $result = _getContainerBuildConfiguration -Item $item -Tag '1.0.0'
+            $result = _getContainerBuildConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             # The last argument should be the context directory
             $result.buildActions[0].args[-1] | Should -Be $testAppDockerDir
@@ -99,7 +99,7 @@ Describe '_getContainerBuildConfiguration' {
                 ContextDir = $testAppSrcDir
             }
 
-            $result =_getContainerBuildConfiguration -Item $item -Tag '1.0.0'
+            $result =_getContainerBuildConfiguration -Item $item -Tag '1.0.0' -DockerToolPath 'docker'
 
             $result.buildActions[0].args[-1] | Should -Be $testAppSrcDir
         }
