@@ -9,9 +9,9 @@
         "repository": "https://github.com/zerofailed/ZeroFailed.Build.Common"
       },
       "requested": "[1.0.0,2.0.0)",
-      "resolved": "44282e5a9aadb577d1c17a7b5f3533eea25cc9c1",
-      "resolvedRef": "refs/tags/1.2.4",
-      "contentHash": "sha256:2877d270e916982677e13a4c52424f42b21a1d0e5519cf1fce44a09a12582f6a",
+      "resolved": "5a635730903a720e5b3c70e563553cd97585a574",
+      "resolvedRef": "refs/tags/1.2.5",
+      "contentHash": "sha256:9362b56553e5b4ea95309ad3519688597e5a57b34037460eeeba4fa8d638efd8",
       "direct": false,
       "requiredBy": [
         "ZeroFailed.Build.GitHub",
